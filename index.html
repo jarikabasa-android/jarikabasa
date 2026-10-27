@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarika BASA Digital Zone | Online Seva & Job Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f3f6f9; color: #2c3e50; line-height: 1.6; }
+        
+        /* 1. TOP RUNNING TICKER */
+        .news-ticker-bar {
+            background: #d32f2f; color: #ffffff; display: flex; align-items: center;
+            overflow: hidden; font-size: 0.9rem; position: sticky; top: 0; z-index: 100;
+        }
+        .ticker-title {
+            background: #b71c1c; padding: 10px 18px; font-weight: 700; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ticker-content { white-space: nowrap; overflow: hidden; width: 100%; }
+        .ticker-track { display: inline-block; padding-left: 100%; animation: tickerMove 28s linear infinite; }
+        .ticker-track:hover { animation-play-state: paused; }
+        .ticker-track span { margin-right: 45px; font-weight: 500; }
+        .ticker-track span i { color: #ffeb3b; margin-right: 6px; }
+        @keyframes tickerMove {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* 2. HEADER */
+        header { background: linear-gradient(135deg, #0d47a1, #1976d2); color: white; text-align: center; padding: 35px 20px; }
+        .brand-logo { width: 90px; height: 90px; border-radius: 50%; background: white; padding: 6px; object-fit: contain; margin-bottom: 12px; }
+        header h1 { font-size: 2.2rem; font-weight: 700; }
+        header p { font-size: 1.05rem; opacity: 0.95; margin-top: 5px; }
+        .cta-buttons { margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+        .btn-call { background-color: #ff9800; color: white; }
+        .btn-whatsapp { background-color: #25d366; color: white; }
+
+        /* 3. CONTAINERS & SECTIONS */
+        .container { max-width: 1100px; margin: auto; padding: 35px 20px; }
+        .section-header { text-align: center; margin-bottom: 25px; }
+        .section-header h2 { font-size: 1.7rem; color: #0d47a1; font-weight: 700; }
+        .divider { width: 60px; height: 4px; background: #ff9800; margin: 8px auto 0; border-radius: 2px; }
+
+        /* 4. JOBS SECTION */
+        .jobs-panel { background: #ffffff; border-radius: 12px; padding: 22px; margin-bottom: 40px; border: 1px solid #e0e0e0; }
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 15px; }
+        .job-card { border: 1px solid #e2e8f0; border-left: 5px solid #d32f2f; border-radius: 8px; padding: 16px; background: #fafafa; display: flex; flex-direction: column; justify-content: space-between; }
+        .job-badge { display: inline-block; background: #e3f2fd; color: #0d47a1; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+        .job-card h4 { font-size: 1.05rem; margin-bottom: 8px; color: #1a202c; }
+        .job-card p { font-size: 0.88rem; color: #555; margin-bottom: 5px; }
+        .apply-btn { display: block; text-align: center; background: #0d47a1; color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; margin-top: 12px; }
+
+        /* 5. SERVICES GRID */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .service-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 4px solid #1976d2; }
+        .service-card .icon-box { font-size: 1.8rem; color: #1976d2; margin-bottom: 10px; }
+        .service-card h3 { font-size: 1.15rem; margin-bottom: 10px; color: #0d47a1; }
+        .service-card ul { list-style: none; }
+        .service-card ul li { padding: 5px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.9rem; color: #444; }
+        .service-card ul li:last-child { border-bottom: none; }
+
+        /* 6. CONTACT & FOOTER */
+        .contact-box { background: white; border-radius: 10px; padding: 25px; margin-top: 40px; text-align: center; }
+        footer { background: #111827; color: #9ca3af; text-align: center; padding: 15px; font-size: 0.85rem; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Running Job Alert Ticker -->
+    <div class="news-ticker-bar">
+        <div class="ticker-title"><i class="fa-solid fa-bullhorn"></i> LATEST JOBS & ALERTS</div>
+        <div class="ticker-content">
+            <div class="ticker-track">
+                <span><i class="fa-solid fa-bell"></i> SSC Bharti Online Shuru (Last Date Najdeek)</span>
+                <span><i class="fa-solid fa-bell"></i> Railway RRB Technician Form Fill-up Upalabdh</span>
+                <span><i class="fa-solid fa-bell"></i> Police Constable & SI Form Apply Karein</span>
+                <span><i class="fa-solid fa-bell"></i> India Post GDS Nayi Bharti List & Form</span>
+                <span><i class="fa-solid fa-bell"></i> Ayushman Card, PAN Card, Voter Card Kaam Chalu Hai</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Header Section -->
+    <header>
+        <img src="logo.png" alt="Jarika BASA Logo" class="brand-logo" onerror="this.style.display='none'">
+        <h1>JARIKA BASA DIGITAL ZONE</h1>
+        <p>Aapka Vishwasniya Online Seva, Cyber Cafe & Sarkari Bharti Kendra</p>
+        <div class="cta-buttons">
+            <a href="tel:+918210516739" class="btn btn-call"><i class="fa-solid fa-phone"></i> Call Karein</a>
+            <a href="https://wa.me/918210516739?text=Namaste%20Jarika%20BASA,%20mujhe%20online%20service%20ke%20bare%20me%20puchhna%20hai" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp Karein</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 3. Current Live Jobs Section -->
+        <div class="jobs-panel">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-briefcase"></i> Chalu Sarkari Bharti & Forms</h2>
+                <div class="divider"></div>
+            </div>
+            <div class="jobs-grid">
+                <div class="job-card">
+                    <div>
+                        <span class="job-badge">Central / SSC</span>
+                        <h4>SSC Combined Higher Secondary (10+2)</h4>
+                        <p><strong>Yogyata:</strong> 12th Pass</p>
+                        <p><strong>Aavedan:</strong> Online Chalu Hai</p>
+                    </div>
+                    <a href="https://wa.me/918210516739?text=Mujhe%20SSC%20Form%20apply%20karwana%20hai" class="apply-btn">Form Bharwayein <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="job-card">
+                    <div>
+                        <span class="job-badge">Railway</span>
+                        <h4>Railway RRB Technician / Group D</h4>
+                        <p><strong>Yogyata:</strong> 10th / ITI Pass</p>
+                        <p><strong>Aavedan:</strong> Naye Registrations Open</p>
+                    </div>
+                    <a href="https://wa.me/918210516739?text=Mujhe%20Railway%20Form%20apply%20karwana%20hai" class="apply-btn">Form Bharwayein <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="job-card">
+                    <div>
+                        <span class="job-badge">Police / Defence</span>
+                        <h4>State Police Constable Bharti</h4>
+                        <p><strong>Yogyata:</strong> 10th / 12th Pass</p>
+                        <p><strong>Aavedan:</strong> Form Chalu Hai</p>
+                    </div>
+                    <a href="https://wa.me/918210516739?text=Mujhe%20Police%20Constable%20Form%20bharna%20hai" class="apply-btn">Form Bharwayein <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="job-card">
+                    <div>
+                        <span class="job-badge">Post Office</span>
+                        <h4>India Post Dak Sevak (GDS)</h4>
+                        <p><strong>Yogyata:</strong> 10th Pass</p>
+                        <p><strong>Aavedan:</strong> Nayi Bharti Notification</p>
+                    </div>
+                    <a href="https://wa.me/918210516739?text=Mujhe%20India%20Post%20GDS%20form%20bharna%20hai" class="apply-btn">Form Bharwayein <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Services Grid -->
+        <div class="section-header">
+            <h2>Hamari Sabhi Online & Dukan Sevaayein</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-print"></i></div>
+                <h3>Printout & Xerox</h3>
+                <ul>
+                    <li>High Speed Xerox (Black & White)</li>
+                    <li>HD Color Printout</li>
+                    <li>Admit Card & Result Print</li>
+                    <li>Document PDF Scan & WhatsApp</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-camera"></i></div>
+                <h3>Photo & Lamination</h3>
+                <ul>
+                    <li>Urgent Passport Size Photo (5 Minute Me)</li>
+                    <li>Fata / Purana Photo Thik Karna</li>
+                    <li>Document Heavy Lamination</li>
+                    <li>Custom Photo Framing</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-file-signature"></i></div>
+                <h3>Sarkari Form Online</h3>
+                <ul>
+                    <li>Sabhi Sarkari Job Online Form Fill Up</li>
+                    <li>School/College Admission Forms</li>
+                    <li>Scholarship Form (Pre & Post Matric)</li>
+                    <li>Correction & Challan Payment</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-building-columns"></i></div>
+                <h3>Banking & Aadhar Nikasi</h3>
+                <ul>
+                    <li>AePS / Aadhar Se Paisa Nikasi</li>
+                    <li>Balance Check & Mini Statement</li>
+                    <li>DBT / Sarkari Yojna Paisa Jaanch</li>
+                    <li>Money Transfer (DMT)</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-id-card"></i></div>
+                <h3>Card & Certificate</h3>
+                <ul>
+                    <li>Ayushman Bharat Health Card</li>
+                    <li>Naya PAN Card & Correction</li>
+                    <li>Voter ID Card Online Apply/Correction</li>
+                    <li>Ration Card Sambandhit Kaam</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="icon-box"><i class="fa-solid fa-bolt"></i></div>
+                <h3>Recharge & Bill Payment</h3>
+                <ul>
+                    <li>Bijli Bill Bhugtan</li>
+                    <li>Mobile & DTH Recharge</li>
+                    <li>Train / IRCTC Ticket Booking</li>
+                    <li>Gas Cylinder Booking</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 5. Contact Info Box -->
+        <div class="contact-box">
+            <h3 style="color: #0d47a1; margin-bottom: 8px;">Jarika BASA Digital Zone</h3>
+            <p><i class="fa-solid fa-location-dot" style="color: #d32f2f;"></i> Pata: [Apni Dukan Ka Pata Yahan Likhein]</p>
+            <p><i class="fa-solid fa-phone" style="color: #ff9800;"></i> Phone: +91-8210516739</p>
+            <p><i class="fa-solid fa-clock" style="color: #0d47a1;"></i> Samay: Somwar se Shanivar (Subah 8:00 AM se Shaam 8:00 PM)</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Jarika BASA Digital Zone. Sabhi Adhikar Surakshit.</p>
+    </footer>
+
+</body>
+</html>
