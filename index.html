@@ -215,11 +215,63 @@
         <!-- 5. Contact Info Box -->
         <div class="contact-box">
             <h3 style="color: #0d47a1; margin-bottom: 8px;">Jarika BASA Digital Zone</h3>
-            <p><i class="fa-solid fa-location-dot" style="color: #d32f2f;"></i> Pata: [Apni Dukan Ka Pata Yahan Likhein]</p>
+            <p><i class="fa-solid fa-location-dot" style="color: #d32f2f;"></i> Pata: [Chholagora,Sarjamda, jamsheepur]</p>
             <p><i class="fa-solid fa-phone" style="color: #ff9800;"></i> Phone: +91-8210516739</p>
             <p><i class="fa-solid fa-clock" style="color: #0d47a1;"></i> Samay: Somwar se Shanivar (Subah 8:00 AM se Shaam 8:00 PM)</p>
         </div>
     </div>
+<!-- Background Remover Tool Start -->
+<div style="background: #ffffff; padding: 25px; margin: 30px auto; max-width: 650px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; font-family: inherit;">
+    <h3 style="color: #1a365d; margin-bottom: 8px;">✨ Free Photo Background Remover</h3>
+    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Passport size photo ya kisi bhi document photo ka background 1-click me hatayein</p>
+
+    <input type="file" id="bg-input-file" accept="image/*" style="display: none;">
+    <button onclick="document.getElementById('bg-input-file').click()" style="background: #2563eb; color: #fff; padding: 10px 22px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px;">
+        📁 Photo Select Karein
+    </button>
+
+    <div id="loading-msg" style="display: none; margin-top: 15px; color: #d97706; font-weight: bold;">⏳ Background hataya ja raha hai, kripya intezar karein...</div>
+
+    <div id="result-box" style="margin-top: 20px; display: none;">
+        <img id="output-image" src="" alt="Result" style="max-width: 100%; max-height: 250px; border: 2px dashed #cbd5e1; border-radius: 8px; background: url('https://upload.wikimedia.org/wikipedia/commons/1/10/Checkerboard_pattern.svg');">
+        <br>
+        <a id="download-btn" href="#" download="jarika_bg_removed.png" style="display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            📥 Download PNG
+        </a>
+    </div>
+</div>
+
+<script type="module">
+    import imglyRemoveBackground from "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm";
+
+    const inputFile = document.getElementById('bg-input-file');
+    const loadingMsg = document.getElementById('loading-msg');
+    const resultBox = document.getElementById('result-box');
+    const outputImage = document.getElementById('output-image');
+    const downloadBtn = document.getElementById('download-btn');
+
+    inputFile.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        loadingMsg.style.display = 'block';
+        resultBox.style.display = 'none';
+
+        try {
+            const blob = await imglyRemoveBackground(file);
+            const url = URL.createObjectURL(blob);
+            outputImage.src = url;
+            downloadBtn.href = url;
+            resultBox.style.display = 'block';
+        } catch (err) {
+            alert('Photo process karne me samasya aayi. Kripya dusri photo upload karein.');
+            console.error(err);
+        } finally {
+            loadingMsg.style.display = 'none';
+        }
+    });
+</script>
+<!-- Background Remover Tool End -->
 
     <footer>
         <p>&copy; 2026 Jarika BASA Digital Zone. Sabhi Adhikar Surakshit.</p>
