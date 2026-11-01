@@ -221,55 +221,99 @@
         </div>
     </div>
 <!-- Background Remover Tool Start -->
-<div style="background: #ffffff; padding: 25px; margin: 30px auto; max-width: 650px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; font-family: inherit;">
-    <h3 style="color: #1a365d; margin-bottom: 8px;">✨ Free Photo Background Remover</h3>
-    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Passport size photo ya kisi bhi document photo ka background 1-click me hatayein</p>
+<div style="background: #ffffff; padding: 25px 20px; margin: 30px auto; max-width: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0; font-family: sans-serif;">
+    <h3 style="color: #1a365d; margin: 0 0 10px 0;">✨ Photo Background Remover</h3>
+    <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">Passport photo ya kisi bhi photo ka background hatayein</p>
 
-    <input type="file" id="bg-input-file" accept="image/*" style="display: none;">
-    <button onclick="document.getElementById('bg-input-file').click()" style="background: #2563eb; color: #fff; padding: 10px 22px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px;">
-        📁 Photo Select Karein
+    <!-- Upload Button -->
+    <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
+    <button type="button" id="upload-trigger-btn" style="background: #2563eb; color: #ffffff; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; max-width: 280px; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+        📁 Photo Upload Karein
     </button>
 
-    <div id="loading-msg" style="display: none; margin-top: 15px; color: #d97706; font-weight: bold;">⏳ Background hataya ja raha hai, kripya intezar karein...</div>
+    <!-- Status Text -->
+    <p id="status-text" style="margin-top: 15px; font-size: 14px; font-weight: bold; color: #475569; display: none;"></p>
 
-    <div id="result-box" style="margin-top: 20px; display: none;">
-        <img id="output-image" src="" alt="Result" style="max-width: 100%; max-height: 250px; border: 2px dashed #cbd5e1; border-radius: 8px; background: url('https://upload.wikimedia.org/wikipedia/commons/1/10/Checkerboard_pattern.svg');">
-        <br>
-        <a id="download-btn" href="#" download="jarika_bg_removed.png" style="display: inline-block; margin-top: 15px; background: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
-            📥 Download PNG
-        </a>
+    <!-- Preview & Action Box -->
+    <div id="preview-container" style="display: none; margin-top: 20px;">
+        <canvas id="output-canvas" style="max-width: 100%; height: auto; max-height: 280px; border-radius: 8px; border: 2px dashed #94a3b8; background-color: #f8fafc;"></canvas>
+        
+        <div style="margin-top: 15px;">
+            <a id="download-anchor" href="#" download="photo_no_bg.png" style="background: #16a34a; color: #ffffff; padding: 10px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; font-size: 15px;">
+                📥 Download PNG
+            </a>
+        </div>
     </div>
 </div>
 
-<script type="module">
-    import imglyRemoveBackground from "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm";
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById('bg-file-input');
+    const uploadBtn = document.getElementById('upload-trigger-btn');
+    const statusText = document.getElementById('status-text');
+    const previewContainer = document.getElementById('preview-container');
+    const canvas = document.getElementById('output-canvas');
+    const downloadAnchor = document.getElementById('download-anchor');
+    const ctx = canvas.getContext('2d');
 
-    const inputFile = document.getElementById('bg-input-file');
-    const loadingMsg = document.getElementById('loading-msg');
-    const resultBox = document.getElementById('result-box');
-    const outputImage = document.getElementById('output-image');
-    const downloadBtn = document.getElementById('download-btn');
+    uploadBtn.addEventListener('click', () => fileInput.click());
 
-    inputFile.addEventListener('change', async (e) => {
+    fileInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        loadingMsg.style.display = 'block';
-        resultBox.style.display = 'none';
+        statusText.style.display = 'block';
+        statusText.style.color = '#2563eb';
+        statusText.innerText = 'Photo load ho rahi hai...';
 
-        try {
-            const blob = await imglyRemoveBackground(file);
-            const url = URL.createObjectURL(blob);
-            outputImage.src = url;
-            downloadBtn.href = url;
-            resultBox.style.display = 'block';
-        } catch (err) {
-            alert('Photo process karne me samasya aayi. Kripya dusri photo upload karein.');
-            console.error(err);
-        } finally {
-            loadingMsg.style.display = 'none';
-        }
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = new Image();
+            img.onload = function () {
+                statusText.innerText = 'Background remove kiya ja raha hai...';
+                
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+
+                // Corner pixel color detect karke background color nikalna
+                const bgR = data[0];
+                const bgG = data[1];
+                const bgB = data[2];
+                const tolerance = 45; // Match threshold
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    const diff = Math.sqrt(
+                        Math.pow(r - bgR, 2) +
+                        Math.pow(g - bgG, 2) +
+                        Math.pow(b - bgB, 2)
+                    );
+
+                    // Agar pixel background se milta julta hai to transparent kar do
+                    if (diff < tolerance) {
+                        data[i + 3] = 0;
+                    }
+                }
+
+                ctx.putImageData(imgData, 0, 0);
+                previewContainer.style.display = 'block';
+                downloadAnchor.href = canvas.toDataURL('image/png');
+                
+                statusText.style.color = '#16a34a';
+                statusText.innerText = '✅ Background hat gaya! Niche se download karein.';
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
     });
+});
 </script>
 <!-- Background Remover Tool End -->
 
