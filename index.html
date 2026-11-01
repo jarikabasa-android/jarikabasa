@@ -220,31 +220,51 @@
             <p><i class="fa-solid fa-clock" style="color: #0d47a1;"></i> Samay: Somwar se Shanivar (Subah 8:00 AM se Shaam 8:00 PM)</p>
         </div>
     </div>
-<!-- Background Remover Tool Start -->
-<div style="background: #ffffff; padding: 25px 20px; margin: 30px auto; max-width: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0; font-family: sans-serif;">
-    <h3 style="color: #1a365d; margin: 0 0 10px 0;">✨ Photo Background Remover</h3>
-    <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">Passport photo ya kisi bhi photo ka background hatayein</p>
+<!-- AI Background Remover with Compression & Reset -->
+<div style="background: #ffffff; padding: 25px 20px; margin: 30px auto; max-width: 520px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0; font-family: sans-serif;">
+    <h3 style="color: #1a365d; margin: 0 0 10px 0;">✨ AI Background Remover & Compressor</h3>
+    <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">Background hatayein aur form ke hisaab se MB size kam karein</p>
 
     <!-- Upload Button -->
     <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
-    <button type="button" id="upload-trigger-btn" style="background: #2563eb; color: #ffffff; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; max-width: 280px; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+    <button type="button" id="upload-trigger-btn" style="background: #2563eb; color: #ffffff; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; max-width: 280px;">
         📁 Photo Upload Karein
     </button>
 
     <!-- Status Text -->
     <p id="status-text" style="margin-top: 15px; font-size: 14px; font-weight: bold; color: #475569; display: none;"></p>
 
-    <!-- Preview & Action Box -->
+    <!-- Preview & Controls Box -->
     <div id="preview-container" style="display: none; margin-top: 20px;">
-        <canvas id="output-canvas" style="max-width: 100%; height: auto; max-height: 280px; border-radius: 8px; border: 2px dashed #94a3b8; background-color: #f8fafc;"></canvas>
+        <canvas id="output-canvas" style="max-width: 100%; height: auto; max-height: 280px; border-radius: 8px; border: 2px dashed #94a3b8; background: url('https://upload.wikimedia.org/wikipedia/commons/1/10/Checkerboard_pattern.svg');"></canvas>
+
+        <!-- Size / Compression Controls -->
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #cbd5e1; text-align: left;">
+            <label style="font-size: 13px; font-weight: bold; color: #334155; display: block; margin-bottom: 6px;">
+                Photo Quality / Size Kam Karein: <span id="quality-val" style="color: #2563eb;">80%</span>
+            </label>
+            <input type="range" id="quality-slider" min="10" max="100" value="80" style="width: 100%; cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 4px;">
+                <span>Kam Size (Fast/Form)</span>
+                <span>Anumanit Size: <b id="file-size-indicator" style="color: #0f172a;">-- KB</b></span>
+                <span>High Quality</span>
+            </div>
+        </div>
         
-        <div style="margin-top: 15px;">
-            <a id="download-anchor" href="#" download="photo_no_bg.png" style="background: #16a34a; color: #ffffff; padding: 10px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; font-size: 15px;">
-                📥 Download PNG
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a id="download-anchor" href="#" download="jarika_clean_photo.png" style="background: #16a34a; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center;">
+                📥 Download & Remove
             </a>
+            <button type="button" id="reset-btn" style="background: #ef4444; color: #ffffff; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer;">
+                🔄 Reset (Nayi Photo)
+            </button>
         </div>
     </div>
 </div>
+
+<!-- Google MediaPipe AI Library -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -254,7 +274,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const previewContainer = document.getElementById('preview-container');
     const canvas = document.getElementById('output-canvas');
     const downloadAnchor = document.getElementById('download-anchor');
+    const resetBtn = document.getElementById('reset-btn');
+    const qualitySlider = document.getElementById('quality-slider');
+    const qualityVal = document.getElementById('quality-val');
+    const sizeIndicator = document.getElementById('file-size-indicator');
     const ctx = canvas.getContext('2d');
+
+    let processedImageData = null;
+
+    const selfieSegmentation = new SelfieSegmentation({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+    });
+
+    selfieSegmentation.setOptions({
+        modelSelection: 1
+    });
+
+    selfieSegmentation.onResults(onResults);
 
     uploadBtn.addEventListener('click', () => fileInput.click());
 
@@ -264,58 +300,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
         statusText.style.display = 'block';
         statusText.style.color = '#2563eb';
-        statusText.innerText = 'Photo load ho rahi hai...';
+        statusText.innerText = 'AI Photo scan kar raha hai, kripya intezar karein...';
 
         const reader = new FileReader();
         reader.onload = function (event) {
             const img = new Image();
-            img.onload = function () {
-                statusText.innerText = 'Background remove kiya ja raha hai...';
-                
+            img.onload = async function () {
                 canvas.width = img.width;
                 canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-
-                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imgData.data;
-
-                // Corner pixel color detect karke background color nikalna
-                const bgR = data[0];
-                const bgG = data[1];
-                const bgB = data[2];
-                const tolerance = 45; // Match threshold
-
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-
-                    const diff = Math.sqrt(
-                        Math.pow(r - bgR, 2) +
-                        Math.pow(g - bgG, 2) +
-                        Math.pow(b - bgB, 2)
-                    );
-
-                    // Agar pixel background se milta julta hai to transparent kar do
-                    if (diff < tolerance) {
-                        data[i + 3] = 0;
-                    }
-                }
-
-                ctx.putImageData(imgData, 0, 0);
-                previewContainer.style.display = 'block';
-                downloadAnchor.href = canvas.toDataURL('image/png');
-                
-                statusText.style.color = '#16a34a';
-                statusText.innerText = '✅ Background hat gaya! Niche se download karein.';
+                await selfieSegmentation.send({ image: img });
             };
             img.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
+
+    function onResults(results) {
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        processedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        updateDownloadUrl();
+
+        previewContainer.style.display = 'block';
+        uploadBtn.style.display = 'none';
+        statusText.style.color = '#16a34a';
+        statusText.innerText = '✅ Background hat gaya!';
+    }
+
+    function updateDownloadUrl() {
+        const quality = parseInt(qualitySlider.value, 10) / 100;
+        qualityVal.innerText = qualitySlider.value + '%';
+
+        // Quality aur size kam karne ke liye compressed image generate karna
+        const dataUrl = canvas.toDataURL('image/webp', quality);
+        downloadAnchor.href = dataUrl;
+        downloadAnchor.download = 'jarika_photo_' + qualitySlider.value + 'pct.webp';
+
+        // Size estimate nikalna (KB me)
+        const head = 'data:image/webp;base64,';
+        const fileSizeBytes = Math.round((dataUrl.length - head.length) * 3 / 4);
+        const fileSizeKb = (fileSizeBytes / 1024).toFixed(1);
+        sizeIndicator.innerText = fileSizeKb + ' KB';
+    }
+
+    qualitySlider.addEventListener('input', updateDownloadUrl);
+
+    // Reset Function
+    function resetTool() {
+        fileInput.value = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        previewContainer.style.display = 'none';
+        uploadBtn.style.display = 'inline-block';
+        statusText.style.display = 'none';
+        qualitySlider.value = 80;
+    }
+
+    resetBtn.addEventListener('click', resetTool);
+
+    // Download ke 1 second baad screen se photo hatana
+    downloadAnchor.addEventListener('click', function () {
+        setTimeout(() => {
+            resetTool();
+            statusText.style.display = 'block';
+            statusText.style.color = '#16a34a';
+            statusText.innerText = '✅ Photo download ho gayi aur screen se safely hata di gayi!';
+        }, 1000);
+    });
 });
 </script>
-<!-- Background Remover Tool End -->
+<!-- AI Background Remover End -->
 
     <footer>
         <p>&copy; 2026 Jarika BASA Digital Zone. Sabhi Adhikar Surakshit.</p>
